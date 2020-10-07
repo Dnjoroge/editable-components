@@ -81,3 +81,5 @@ buildNumber.properties
 
 */target/**
 */target/*
+ui.frontend/dist/
+ui.frontend/node_modules/

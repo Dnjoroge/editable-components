@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Experience Fragment (v1)
+Editable Component (v1)
 ====
 Experience fragment component written in HTL that renders an experience fragment variation.
 
