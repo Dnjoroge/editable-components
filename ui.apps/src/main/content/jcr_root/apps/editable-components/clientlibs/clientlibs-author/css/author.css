@@ -1,0 +1,12 @@
+.author-ui-bar {
+    width: 100% !important;
+    padding: initial !important;
+    font-size: 1.0rem !important;
+    line-height: 2 !important;
+    text-align: center !important;
+    font-family: inherit !important;
+    margin-bottom: 1em !important;
+    border-bottom: 1px solid #606060 !important;
+    background: #606060 none !important;
+    color: #FFFFFF !important;
+}

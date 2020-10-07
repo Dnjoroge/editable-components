@@ -15,6 +15,8 @@
 */-->
 <sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html">
     <sly data-sly-call="${clientlib.css @ categories='editable-components.base'}">
+    <sly data-sly-test="${wcmmode.edit || wcmmode.design}"
+         data-sly-call="${clientlib.css @ categories=['apps.editable-components.author']}"></sly>
 </sly>
 
 <sly data-sly-resource="${'contexthub' @ resourceType='granite/contexthub/components/contexthub'}"/>
