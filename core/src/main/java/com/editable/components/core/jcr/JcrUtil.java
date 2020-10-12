@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
 
 public class JcrUtil {
 
-    private static final String EDITABLE_COMPONENTS_SYSTEM_USER = "editable-components-system-auth-user";
+    private static final String EDITABLE_COMPONENTS_SYSTEM_USER = "editable-components-service-user";
 
     private static final Logger log = LoggerFactory.getLogger(JcrUtil.class);
 
