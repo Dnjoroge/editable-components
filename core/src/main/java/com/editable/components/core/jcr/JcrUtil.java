@@ -10,13 +10,11 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class JcrUtil {
+public class JcrUtil extends com.day.cq.commons.jcr.JcrUtil {
 
     private static final String EDITABLE_COMPONENTS_SYSTEM_USER = "editable-components-service-user";
 
@@ -56,22 +54,23 @@ public class JcrUtil {
             Resource destinationResource = resourceResolver.getResource(destinationPath);
 
             if (originResource != null && destinationResource != null) {
-                originResource.getChildren().forEach(currentResource -> {
-                        Node srcNode = currentResource.adaptTo(Node.class);
-                Node destNode = destinationResource.adaptTo(Node.class);
-                try {
-                    boolean isNotSameOrHasNoChildren = true;
 
-                    if (destinationResource.hasChildren()) {
-                        isNotSameOrHasNoChildren = getResourceChildrenName(destinationResource)
-                                .stream()
-                                .anyMatch(name -> !StringUtils.equalsIgnoreCase(name, currentResource.getName()));
-                    }
+                // clear JCR before copying atomic components view on refresh node
+                if (refreshNodes) cleanJcr(destinationResource);
+
+                originResource.getChildren().forEach(currentResource -> {
+                    Node srcNode = currentResource.adaptTo(Node.class);
+                    Node destNode = destinationResource.adaptTo(Node.class);
+                    try {
+                        boolean isNotSameOrHasNoChildren = true;
+
+                        if (destinationResource.hasChildren()) {
+                            isNotSameOrHasNoChildren = getResourceChildrenName(destinationResource)
+                                    .stream().noneMatch(currentResource.getName()::contains);
+                        }
 
                     if (isNotSameOrHasNoChildren || refreshNodes) {
-                        // clear JCR before copying atomic components view
-                        cleanJcr(destNode);
-                        com.day.cq.commons.jcr.JcrUtil.copy(srcNode, destNode, null, true);
+                        copy(Objects.requireNonNull(srcNode), Objects.requireNonNull(destNode), null, true);
                     }
                 } catch (RepositoryException e) {
                     log.error("Error copying" + originPath + " -> Error: " + e.toString());
@@ -84,17 +83,18 @@ public class JcrUtil {
         }
     }
 
-    private static List < String > getResourceChildrenName(Resource resource) {
+    private static List <String> getResourceChildrenName(Resource resource) {
         return StreamSupport.stream(resource.getChildren().spliterator(), false)
                 .map(Resource::getName)
                 .collect(Collectors.toList());
     }
 
-    private static void cleanJcr(Node node) {
+    private static void cleanJcr(Resource destinationResource) {
+        final Node node = destinationResource.adaptTo(Node.class);
         if (node != null) {
             try {
                 NodeIterator nodes = node.getNodes();
-                @SuppressWarnings("unchecked") Iterable < Node > nodeIterable = () -> nodes;
+                Iterable <Node> nodeIterable = () -> nodes;
                 nodeIterable.forEach(currentNode -> {
                     try {
                         currentNode.remove();
@@ -108,4 +108,5 @@ public class JcrUtil {
             }
         }
     }
+
 }
